@@ -18,7 +18,7 @@ Signed-off-by: Jouni Malinen <j@w1.fi>
 
 --- a/src/common/sae.c
 +++ b/src/common/sae.c
-@@ -286,14 +286,16 @@ static int sae_derive_pwe_ecc(struct sae
+@@ -294,14 +294,16 @@ static int sae_derive_pwe_ecc(struct sae
  	int pwd_seed_odd = 0;
  	u8 prime[SAE_MAX_ECC_PRIME_LEN];
  	size_t prime_len;
@@ -36,7 +36,7 @@ Signed-off-by: Jouni Malinen <j@w1.fi>
  
  	os_memset(x_bin, 0, sizeof(x_bin));
  
-@@ -402,25 +404,42 @@ static int sae_derive_pwe_ecc(struct sae
+@@ -410,25 +412,42 @@ static int sae_derive_pwe_ecc(struct sae
  		goto fail;
  	}
  
