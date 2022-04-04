@@ -170,16 +170,19 @@ detect_mac80211() {
 		
 		ssid="OpenWrt"
 		[ "$mode_band" != "2g" ] && ssid="${ssid}_5G"
+		hwmode="a"
+		[ "$mode_band" = "2g" ] && hwmode="g"
+		[ -n "$htmode" ] && ht_capab="set wireless.radio${devidx}.htmode=$htmode"
 
 		uci -q batch <<-EOF
 			set wireless.radio${devidx}=wifi-device
 			set wireless.radio${devidx}.type=mac80211
 			${dev_id}
 			set wireless.radio${devidx}.channel=${channel}
-			set wireless.radio${devidx}.band=${mode_band}
-			set wireless.radio${devidx}.htmode=$htmode
+			set wireless.radio${devidx}.hwmode=11${hwmode}
 			set wireless.radio${devidx}.disabled=0
 			set wireless.radio${devidx}.country=US
+			${ht_capab}
 
 			set wireless.default_radio${devidx}=wifi-iface
 			set wireless.default_radio${devidx}.device=radio${devidx}
