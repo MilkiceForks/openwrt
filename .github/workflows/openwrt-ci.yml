@@ -79,7 +79,7 @@ jobs:
     - name: Build firmware
       run: |
         echo -e "$(nproc) thread build."
-        make -j$(nproc) IGNORE_ERRORS="n m" V=s
+        make -j$(nproc) IGNORE_ERRORS="n m"
 
     - name : Upload artifact
       uses: actions/upload-artifact@master
