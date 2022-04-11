@@ -23,6 +23,13 @@ jobs:
     steps:
     - name: Checkout
       uses: actions/checkout@master
+      with:
+        fetch-depth: 0
+
+    - name: Cache
+      uses: klever1988/cachewrtbuild@main
+      with:
+        ccache: 'true'
 
     - name: Initialization environment
       env:
@@ -44,14 +51,25 @@ jobs:
         git sparse-checkout set luci-app-openclash
         git checkout
         cd ../../
-
+    
+    - name: Add HelloWorld
+      run: |
+        mkdir -p package/helloworld
+        for i in "dns2socks" "microsocks" "ipt2socks" "pdnsd-alt" "redsocks2"; do \
+          svn checkout "https://github.com/immortalwrt/packages/trunk/net/$i" "package/helloworld/$i"; \
+        done
+        sed -i "/helloworld/d" "feeds.conf.default"
+        echo "src-git helloworld https://github.com/fw876/helloworld.git" >> "feeds.conf.default"
+    
     - name: Update & Install feeds
       run: |
         ./scripts/feeds update -a
         ./scripts/feeds install -a
     
     - name: Generate configuration file
-      run: make defconfig
+      run: |
+        echo -e 'CONFIG_DEVEL=y\nCONFIG_CCACHE=y' >> .config
+        make defconfig
     
     - name: Download package
       run: |
