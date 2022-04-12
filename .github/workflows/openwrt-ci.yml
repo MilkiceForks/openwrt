@@ -70,7 +70,6 @@ jobs:
     - name: Generate configuration file
       run: |
         echo -e 'CONFIG_DEVEL=y\nCONFIG_CCACHE=y' >> .config
-        make defconfig
         cat .config
     
     - name: Download package
