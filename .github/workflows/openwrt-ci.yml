@@ -23,18 +23,12 @@ jobs:
     steps:
     - name: Checkout
       uses: actions/checkout@master
-      with:
-        fetch-depth: 0
-
-    - name: Cache
-      uses: klever1988/cachewrtbuild@main
-      with:
-        ccache: 'true'
 
     - name: Initialization environment
       env:
         DEBIAN_FRONTEND: noninteractive
       run: |
+        cat .config
         docker rmi `docker images -q`
         # sudo rm -rf /usr/share/dotnet /etc/mysql /etc/php /etc/apt/sources.list.d
         sudo -E apt-get -y purge ghc* zulu* hhvm llvm* firefox google* dotnet* powershell openjdk* mysql* php* android*
@@ -45,6 +39,7 @@ jobs:
 
     - name: Download dependencies
       run: |
+        cat .config
         git clone https://github.com/vernesong/OpenClash package/luci-app-openclash --no-checkout --depth=1
         cd package/luci-app-openclash
         git sparse-checkout init --cone
@@ -54,6 +49,7 @@ jobs:
     
     - name: Add HelloWorld
       run: |
+        cat .config
         mkdir -p package/helloworld
         for i in "dns2socks" "microsocks" "ipt2socks" "pdnsd-alt" "redsocks2"; do \
           svn checkout "https://github.com/immortalwrt/packages/trunk/net/$i" "package/helloworld/$i"; \
@@ -63,6 +59,7 @@ jobs:
     
     - name: Update & Install feeds
       run: |
+        cat .config
         ./scripts/feeds update -a
         ./scripts/feeds install -a
         ls feeds/helloworld
