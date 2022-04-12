@@ -65,11 +65,13 @@ jobs:
       run: |
         ./scripts/feeds update -a
         ./scripts/feeds install -a
+        ls feeds/helloworld
     
     - name: Generate configuration file
       run: |
         echo -e 'CONFIG_DEVEL=y\nCONFIG_CCACHE=y' >> .config
         make defconfig
+        cat .config
     
     - name: Download package
       run: |
@@ -79,7 +81,7 @@ jobs:
     - name: Build firmware
       run: |
         echo -e "$(nproc) thread build."
-        make -j$(nproc) IGNORE_ERRORS="n m"
+        make -j$(nproc) V=s
 
     - name : Upload artifact
       uses: actions/upload-artifact@master
