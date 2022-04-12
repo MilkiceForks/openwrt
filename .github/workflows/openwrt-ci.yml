@@ -12,7 +12,7 @@ on:
     types: [published]
   push:
     branches: 
-      - master
+      - 21.02
   watch:
     types: [started]
 
