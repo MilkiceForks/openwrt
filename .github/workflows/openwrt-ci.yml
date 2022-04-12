@@ -23,12 +23,18 @@ jobs:
     steps:
     - name: Checkout
       uses: actions/checkout@master
+      with:
+        fetch-depth: 0
+
+    - name: Cache
+      uses: klever1988/cachewrtbuild@main
+      with:
+        ccache: 'true'
 
     - name: Initialization environment
       env:
         DEBIAN_FRONTEND: noninteractive
       run: |
-        cat .config
         docker rmi `docker images -q`
         # sudo rm -rf /usr/share/dotnet /etc/mysql /etc/php /etc/apt/sources.list.d
         sudo -E apt-get -y purge ghc* zulu* hhvm llvm* firefox google* dotnet* powershell openjdk* mysql* php* android*
@@ -39,7 +45,6 @@ jobs:
 
     - name: Download dependencies
       run: |
-        cat .config
         git clone https://github.com/vernesong/OpenClash package/luci-app-openclash --no-checkout --depth=1
         cd package/luci-app-openclash
         git sparse-checkout init --cone
@@ -49,7 +54,6 @@ jobs:
     
     - name: Add HelloWorld
       run: |
-        cat .config
         mkdir -p package/helloworld
         for i in "dns2socks" "microsocks" "ipt2socks" "pdnsd-alt" "redsocks2"; do \
           svn checkout "https://github.com/immortalwrt/packages/trunk/net/$i" "package/helloworld/$i"; \
@@ -59,26 +63,24 @@ jobs:
     
     - name: Update & Install feeds
       run: |
-        cat .config
         ./scripts/feeds update -a
         ./scripts/feeds install -a
-        ls feeds/helloworld
     
     - name: Generate configuration file
       run: |
+        git restore .config
         echo -e 'CONFIG_DEVEL=y\nCONFIG_CCACHE=y' >> .config
+        make defconfig
         cat .config
     
     - name: Download package
       run: |
         make download -j$(nproc)
         find dl -size -1024c -exec rm -f {} \;
-
     - name: Build firmware
       run: |
         echo -e "$(nproc) thread build."
-        make -j$(nproc) V=s
-
+        make -j$(nproc) IGNORE_ERRORS="n m" V=s
     - name : Upload artifact
       uses: actions/upload-artifact@master
       with:
